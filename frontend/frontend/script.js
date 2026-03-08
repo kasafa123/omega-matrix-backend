@@ -866,6 +866,14 @@
         setTimeout(() => { if (S.map) S.map.invalidateSize(); }, 350);
     };
 
+    // ===== TAMBAHAN: Toggle untuk Admin Tools =====
+    window.toggleAdminTools = function() {
+        const adminTools = document.querySelector('.admin-tools');
+        if (adminTools) {
+            adminTools.classList.toggle('hidden');
+        }
+    };
+
     // ================== AI THREAT ANALYSIS ==================
     const AI = {
         calculateThreatScore(item) {

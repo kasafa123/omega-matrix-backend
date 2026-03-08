@@ -505,10 +505,37 @@
     };
     window.BackupSystem = BackupSystem;
 
-    // ================== PROXY MANAGER ==================
+    // ================== PROXY MANAGER (DENGAN FRESHRSS) ==================
     const ProxyManager = {
         activeCount: 0,
         proxies: [
+            // ----- PROXY FRESHRSS (PRIORITAS UTAMA) -----
+            {
+                name: 'FreshRSS',
+                fetch: async (url, srcInfo) => {
+                    // Ganti dengan URL RSS Intel Anda (dengan tunnel)
+                    const feedUrl = 'https://pregnancy-firefox-obj-movements.trycloudflare.com/freshrss/freshrss-1.28.1/?a=rss&get=c_2&state=3&user=admin&token=kasafa123&hours=168';
+                    try {
+                        const res = await fetch(feedUrl);
+                        const rssText = await res.text();
+                        const parser = new DOMParser();
+                        const xml = parser.parseFromString(rssText, 'text/xml');
+                        const items = Array.from(xml.querySelectorAll('item')).map(item => ({
+                            title: item.querySelector('title')?.textContent || '',
+                            link: item.querySelector('link')?.textContent || '',
+                            date: item.querySelector('pubDate')?.textContent || new Date().toISOString(),
+                            src: 'FreshRSS',
+                            srcR: srcInfo.r,
+                            srcT: srcInfo.t
+                        }));
+                        return { ok: true, items, type: 'xml' };
+                    } catch (err) {
+                        console.error('FreshRSS error:', err);
+                        return { ok: false, items: [] };
+                    }
+                }
+            },
+            // ----- PROXY BAWAAN (SEBAGAI CADANGAN) -----
             { name: 'RSS2JSON', fetch: async (url) => {
                 const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=20`, { signal: AbortSignal.timeout(12000) });
                 const data = await res.json();

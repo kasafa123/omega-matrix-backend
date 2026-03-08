@@ -1,4 +1,19 @@
-backend/node_modules/
-backend/.env
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Env
+.env
+
+# Backup
+*.enc
 *.log
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

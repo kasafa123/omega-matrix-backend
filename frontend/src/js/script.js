@@ -866,14 +866,6 @@
         setTimeout(() => { if (S.map) S.map.invalidateSize(); }, 350);
     };
 
-    // ===== TAMBAHAN: Toggle untuk Admin Tools =====
-    window.toggleAdminTools = function() {
-        const adminTools = document.querySelector('.admin-tools');
-        if (adminTools) {
-            adminTools.classList.toggle('hidden');
-        }
-    };
-
     // ================== AI THREAT ANALYSIS ==================
     const AI = {
         calculateThreatScore(item) {
@@ -1046,64 +1038,6 @@
         } else {
             if (satelliteLayer) { S.map.removeLayer(satelliteLayer); satelliteLayer = null; }
             btn.classList.remove('active'); status.textContent = 'OFF'; log('🛰️ Satellite OFF', 'info');
-        }
-    };
-
-    // ================== FLIGHT RADAR (OPEN SKY) ==================
-    // ===== TAMBAHAN FITUR RADAR PESAWAT =====
-    let flightLayer = null;
-    let flightTimer = null;
-    const FLIGHT_API_URL = 'https://novel-bills-range-greeting.trycloudflare.com/flights'; // GANTI DENGAN URL TUNNEL ANDA
-    let flightEnabled = true;
-
-    async function updateFlights() {
-        try {
-            const res = await fetch(FLIGHT_API_URL);
-            const data = await res.json();
-            if (!Array.isArray(data)) return;
-
-            flightLayer.clearLayers();
-
-            data.forEach(p => {
-                if (!p.lat || !p.lon) return;
-                const icon = L.divIcon({
-                    html: '✈️',
-                    className: 'plane-marker',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                });
-                const marker = L.marker([p.lat, p.lon], { icon }).addTo(flightLayer);
-                marker.bindPopup(`
-                    <b>Callsign:</b> ${p.callsign}<br>
-                    <b>Asal:</b> ${p.from}<br>
-                    <b>Ketinggian:</b> ${p.alt ? p.alt.toFixed(0) + ' m' : '-'}<br>
-                    <b>Kecepatan:</b> ${p.speed ? (p.speed * 3.6).toFixed(0) + ' km/h' : '-'}
-                `);
-            });
-        } catch (err) {
-            console.error('Gagal update pesawat:', err);
-        }
-    }
-
-    window.toggleFlights = function() {
-        flightEnabled = !flightEnabled;
-        const btn = document.getElementById('flight-toggle');
-        const status = document.getElementById('flight-status');
-
-        if (flightEnabled) {
-            if (!S.map.hasLayer(flightLayer)) flightLayer.addTo(S.map);
-            btn.classList.add('active');
-            status.textContent = 'ON';
-            if (!flightTimer) {
-                updateFlights();
-                flightTimer = setInterval(updateFlights, 90000); // 90 detik
-            }
-        } else {
-            if (S.map.hasLayer(flightLayer)) S.map.removeLayer(flightLayer);
-            btn.classList.remove('active');
-            status.textContent = 'OFF';
-            clearInterval(flightTimer);
-            flightTimer = null;
         }
     };
 
@@ -1872,11 +1806,6 @@
         keyboard();
         setup();
         countdown();
-        // ===== INISIALISASI RADAR PESAWAT =====
-        flightLayer = L.layerGroup().addTo(S.map);
-        updateFlights();
-        flightTimer = setInterval(updateFlights, 90000); // 90 detik
-        // ===== AKHIR RADAR PESAWAT =====
         setTimeout(() => { update(); cycle(); }, 1500);
         log('✅ Enterprise system initialized', 'ok');
         Auth.showToast('🎯 OMEGA MATRIX v14.1 ONLINE');

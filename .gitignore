@@ -1,19 +1,12 @@
-# Node
-node_modules/
-npm-debug.log
-package-lock.json
-
-# Env
+# Environment variables
 .env
 
-# Backup
-*.enc
+# Dependencies
+node_modules/
+
+# Logs
 *.log
 
-# OS
-.DS_Store
+# OS files
 Thumbs.db
-
-# IDE
-.vscode/
-.idea/
+.DS_Store
